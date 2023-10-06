@@ -3,7 +3,7 @@
     <nav>
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |
-      <router-link to="/HolaPage">HolaPage</router-link>
+      <router-link to="/ShowBooks">當前圖書</router-link>
     </nav>
     <router-view />
   </div>

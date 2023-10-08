@@ -3,7 +3,8 @@
     <nav>
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |
-      <router-link to="/ShowBooks">當前圖書</router-link>
+      <router-link to="/ShowBooks">當前圖書</router-link> |
+      <router-link to="/UploadBookInfo">beta-新增圖書</router-link>
     </nav>
     <router-view />
   </div>
@@ -18,6 +19,22 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+
+.border-show {
+  border: 2px solid black;
+}
+
+.card:hover {
+  transform: scale(1.1);
+  /* 放大到原始大小的 110% */
+  -webkit-transform: scale(1.1);
+}
+
+.home-title-word {
+  transform: scale(1.1);
+  /* 放大到原始大小的 110% */
+  -webkit-transform: scale(1.1);
 }
 
 nav {

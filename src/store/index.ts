@@ -5,10 +5,18 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    count: 0,
+    UploadBookInfo: '新書發表'
   },
   getters: {
   },
   mutations: {
+    increment(state) {
+      state.count++
+    },
+    setBookInfo(state,payload) {
+      state.UploadBookInfo = payload;
+    }
   },
   actions: {
   },

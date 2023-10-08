@@ -33,7 +33,6 @@
 
 .home-title-word {
   transform: scale(1.1);
-  /* 放大到原始大小的 110% */
   -webkit-transform: scale(1.1);
 }
 

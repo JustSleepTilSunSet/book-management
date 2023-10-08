@@ -31,8 +31,9 @@
   </div>
 </template>
 <script lang="ts">
+import Vue from 'vue';
 
-export default {
+export default Vue.extend({
   data() {
     return {
       newBookInfo: '新書發表喔!'
@@ -43,7 +44,7 @@ export default {
       this.newBookInfo = this.$store.state.UploadBookInfo;
     }
   }
-}
+});
 </script>
 <style lang="scss">
 .btn {

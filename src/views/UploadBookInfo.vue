@@ -10,7 +10,15 @@
         </div>
         <input type="text" v-model="bookIntro" id="book-introduction" class="form-control" aria-label="Small"
             aria-describedby="inputGroup-sizing-sm">
-        <button @click="SubmitAll" class="btn btn-primary" style="margin: auto;">Go somewhere</button>
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-sm">封面</span>
+        </div>
+        <input type="file" id="book-cover" @change="UploadImage" class="form-control" aria-label="Small"
+            aria-describedby="inputGroup-sizing-sm">
+        <button @click="SubmitAll" class="btn btn-primary" style="margin: auto;">新建圖書</button>
+        <h5>預覽:</h5>
+        <img v-if="imageBytes" :src="imageBytes" alt="DefaultCover" height="100px" width="150px">
+
     </div>
 </template>
 
@@ -23,7 +31,9 @@ export default defineComponent({
     data() {
         return {
             bookName: '',
-            bookIntro: ''
+            bookIntro: '',
+            imageBytes: '' as string,
+            bookId: 0 as number
         };
     },
     methods: {
@@ -33,11 +43,29 @@ export default defineComponent({
                     簡介: ${this.bookIntro}
                    完畢`);
 
-            this.$store.commit('setBookInfo',{
-                bookName:  this.bookName,
-                bookIntro:  this.bookIntro
+            this.$store.commit('setBookInfo', {
+                bookId: `book_${this.bookId}`,
+                bookName: this.bookName,
+                bookIntro: this.bookIntro,
+                bookCover: this.imageBytes // base64
             });
-
+            this.bookId ++;
+            this.imageBytes = '' as string;
+        },
+        async UploadImage(event: any) {
+            let target = (event.target as HTMLInputElement);
+            let file = target?.files?.[0];
+            if (file) {
+                this.imageBytes = await this.readAsDataURL(file);
+            }
+        },
+        async readAsDataURL(file: any) {
+            return new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader?.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
         }
     }
 });

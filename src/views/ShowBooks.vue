@@ -8,16 +8,35 @@
     </nav>
     <div class="container  border-show center-div">
       {{ getBookInfo }}
+
       <div class="row">
         <div class="col-sm-3" v-for="item of showBookList">
           <div class="card  border-show" style="width: 100%">
-            <img style="margin-left: auto;height:100px;width=150px;margin-right: auto;" v-if="item.bookCover"
-              :src="item.bookCover">
-            <h1 v-else>The book haven't cover.😢</h1>
+            <img style="margin: auto;height:10%;width:10%;" v-if="item.bookCover" :src="item.bookCover">
+            <h2 v-else>The book haven't cover.😢</h2>
             <div class="card-body">
               <h5 class="card-title">{{ item.bookName }}</h5>
               <p class="card-text">{{ item.bookIntro }}</p>
-              <a href="#" class="btn btn-primary">我想購買</a>
+              <p class="card-text">當前評分: {{ item.bookRatingValue }}</p>
+              <p>我來評價(點擊星星來評分;雙擊後送出評分):</p>
+              <div id="ratingboard" style="margin: auto; height: auto;width: 40%" @mouseleave="MouseLeave($event, item)">
+                <span :id=item.bookRating[0].id style="" class="fa fa-star"
+                  :class="{ checked: item.bookRating[0].isChecked }"
+                  @click="ClickStar($event, item)" @dblclick="SubmitRating"></span>
+                <span :id=item.bookRating[1].id style="" class="fa fa-star"
+                  :class="{ checked: item.bookRating[1].isChecked }" @touchstart="TouchStart($event, item)"
+                  @click="ClickStar($event, item)" @dblclick="SubmitRating" v-touch:touchhold="SubmitRating"></span>
+                <span :id=item.bookRating[2].id style="" class="fa fa-star"
+                  :class="{ checked: item.bookRating[2].isChecked }" @touchstart="TouchStart($event, item)"
+                  @click="ClickStar($event, item)" @dblclick="SubmitRating" v-touch:touchhold="SubmitRating"></span>
+                <span :id=item.bookRating[3].id style=";" class="fa fa-star"
+                  :class="{ checked: item.bookRating[3].isChecked }" @touchstart="TouchStart($event, item)"
+                  @click="ClickStar($event, item)" @dblclick="SubmitRating" v-touch:touchhold="SubmitRating"></span>
+                <span :id=item.bookRating[4].id style="" class="fa fa-star"
+                  :class="{ checked: item.bookRating[4].isChecked }" @touchstart="TouchStart($event, item)"
+                  @click="ClickStar($event, item)" @dblclick="SubmitRating" v-touch:touchhold="SubmitRating"></span>
+              </div>
+              <a href="#" class="btn btn-primary" style="margin-top: 5%;">我想購買</a>
             </div>
           </div>
         </div>
@@ -27,13 +46,16 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
+import Vue2TouchEvents from 'vue2-touch-events'
 
+Vue.use(Vue2TouchEvents)
 export default Vue.extend({
   data() {
     return {
       showBookList: [] as Array<any>,
       allBookList: [] as Array<any>,
-      searchKeyWord: "" as string
+      searchKeyWord: "" as string,
+      ratingMax: 5
     }
   },
   computed: {
@@ -50,6 +72,28 @@ export default Vue.extend({
     }
   },
   methods: {
+    SubmitRating() {
+      confirm("送出評分嗎?");
+    },
+    MouseLeave(e: any, item: any) {
+      console.log('超出範圍');
+      for (let start = 0; start < this.ratingMax; start++) {
+        item.bookRating[start].isChecked = false;
+      }
+    },
+    TouchStart(e: any, item: any) {
+      e.preventDefault();
+      let starIdx = e.target.id.split('-')[1].split('_')[1];
+      for (let start = 0; start < this.ratingMax; start++) {
+        item.bookRating[start].isChecked = start <= starIdx;
+      }
+    },
+    ClickStar(e: any, item: any) {
+      let starIdx = e.target.id.split('-')[1].split('_')[1];
+      for (let start = 0; start < this.ratingMax; start++) {
+        item.bookRating[start].isChecked = start <= starIdx;
+      }
+    }
   }
 });
 </script>
@@ -59,5 +103,9 @@ export default Vue.extend({
   // for Gosomewhere button
   display: block;
   margin: auto;
+}
+
+.checked {
+  color: orange;
 }
 </style>

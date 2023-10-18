@@ -33,23 +33,36 @@ export default defineComponent({
             bookName: '',
             bookIntro: '',
             imageBytes: '' as string,
-            bookId: 0 as number
+            bookId: this.$store.getters.getBookIdx as number,
+            bookRatingValue: 0 as number
         };
     },
     methods: {
         SubmitAll() {
+            let bookObj = {
+                bookId: `book_${this.$store.getters.getBookIdx}`,
+                bookName: this.bookName,
+                bookIntro: this.bookIntro,
+                bookCover: this.imageBytes, // base64
+                bookRatingValue: this.bookRatingValue,
+                bookRating: [] as Array<any>
+            };
+            for (let idx = 0; idx < 5; idx++) {
+                bookObj.bookRating.push(
+                    {
+                        id: `book_${this.$store.getters.getBookIdx}-star_${idx}`,
+                        class: `fa fa-star`,
+                        isChecked: false
+                    }
+                )
+            }
+            this.$store.commit('setBookInfo', bookObj);
+            this.$store.commit('updateBookIdx');
             alert(`新增:
                     書名: ${this.bookName}
                     簡介: ${this.bookIntro}
+                    封面: ${this.imageBytes.length > 0 ? '已經上傳' : '未上傳'}
                    完畢`);
-
-            this.$store.commit('setBookInfo', {
-                bookId: `book_${this.bookId}`,
-                bookName: this.bookName,
-                bookIntro: this.bookIntro,
-                bookCover: this.imageBytes // base64
-            });
-            this.bookId ++;
             this.imageBytes = '' as string;
         },
         async UploadImage(event: any) {

@@ -22,6 +22,9 @@ export default new Vuex.Store({
     },
     updateBookIdx(state) {
       state.bookIdx++;
+    },
+    updateBookList(state,payload){
+      state.UploadBookInfo = payload;
     }
   },
   actions: {

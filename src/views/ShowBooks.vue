@@ -10,33 +10,36 @@
       {{ getBookInfo }}
 
       <div class="row">
-        <div class="col-sm-3" v-for="item of showBookList">
+        <div class="col-sm-3" v-for="(item, index) of  showBookList " :key="index">
           <div class="card  border-show" style="width: 100%">
-            <img style="margin: auto;height:10%;width:10%;" v-if="item.bookCover" :src="item.bookCover">
+            <img v-if="item.bookCover" :src="item.bookCover" style="margin: auto;height:10%;width:10%;">
             <h2 v-else>The book haven't cover.😢</h2>
             <div class="card-body">
               <h5 class="card-title">{{ item.bookName }}</h5>
               <p class="card-text">{{ item.bookIntro }}</p>
-              <p class="card-text">當前評分: {{ item.bookRatingValue }}</p>
+              <p class="card-text" v-if="item.ratingCount > 0">當前評分: {{
+                parseFloat((item.bookRatingValue / item.ratingCount) + "").toFixed(2) }} ({{
+    item.ratingCount }})</p>
+              <p class="card-text" v-else>當前評分: 0 (0)</p>
               <p>我來評價(點擊星星來評分;雙擊後送出評分):</p>
               <div id="ratingboard" style="margin: auto; height: auto;width: 40%" @mouseleave="MouseLeave($event, item)">
                 <span :id=item.bookRating[0].id style="" class="fa fa-star"
-                  :class="{ checked: item.bookRating[0].isChecked }"
-                  @click="ClickStar($event, item)" @dblclick="SubmitRating"></span>
+                  :class="{ checked: item.bookRating[0].isChecked }" @click="ClickStar($event, item)"
+                  @dblclick="ClickRating(item)" v-touch:touchhold="() => { TouchRating(item); }"></span>
                 <span :id=item.bookRating[1].id style="" class="fa fa-star"
-                  :class="{ checked: item.bookRating[1].isChecked }" @touchstart="TouchStart($event, item)"
-                  @click="ClickStar($event, item)" @dblclick="SubmitRating" v-touch:touchhold="SubmitRating"></span>
+                  :class="{ checked: item.bookRating[1].isChecked }" @click="ClickStar($event, item)"
+                  @dblclick="ClickRating(item)" v-touch:touchhold="() => { TouchRating(item); }"></span>
                 <span :id=item.bookRating[2].id style="" class="fa fa-star"
-                  :class="{ checked: item.bookRating[2].isChecked }" @touchstart="TouchStart($event, item)"
-                  @click="ClickStar($event, item)" @dblclick="SubmitRating" v-touch:touchhold="SubmitRating"></span>
+                  :class="{ checked: item.bookRating[2].isChecked }" @click="ClickStar($event, item)"
+                  @dblclick="ClickRating(item)" v-touch:touchhold="() => { TouchRating(item); }"></span>
                 <span :id=item.bookRating[3].id style=";" class="fa fa-star"
-                  :class="{ checked: item.bookRating[3].isChecked }" @touchstart="TouchStart($event, item)"
-                  @click="ClickStar($event, item)" @dblclick="SubmitRating" v-touch:touchhold="SubmitRating"></span>
+                  :class="{ checked: item.bookRating[3].isChecked }" @click="ClickStar($event, item)"
+                  @dblclick="ClickRating(item)" v-touch:touchhold="() => { TouchRating(item); }"></span>
                 <span :id=item.bookRating[4].id style="" class="fa fa-star"
-                  :class="{ checked: item.bookRating[4].isChecked }" @touchstart="TouchStart($event, item)"
-                  @click="ClickStar($event, item)" @dblclick="SubmitRating" v-touch:touchhold="SubmitRating"></span>
+                  :class="{ checked: item.bookRating[4].isChecked }" @click="ClickStar($event, item)"
+                  @dblclick="ClickRating(item)" v-touch:touchhold="() => { TouchRating(item); }"></span>
               </div>
-              <a href="#" class="btn btn-primary" style="margin-top: 5%;">我想購買</a>
+              <a href="#" class="btn btn-primary" style="margin-top: 5%;" @click="ClickPurchased">我想購買</a>
             </div>
           </div>
         </div>
@@ -72,20 +75,33 @@ export default Vue.extend({
     }
   },
   methods: {
-    SubmitRating() {
-      confirm("送出評分嗎?");
-    },
-    MouseLeave(e: any, item: any) {
-      console.log('超出範圍');
-      for (let start = 0; start < this.ratingMax; start++) {
-        item.bookRating[start].isChecked = false;
+    TouchRating(item: any) {
+      if (confirm("送出評分嗎?")) {
+        let idx = this.showBookList.findIndex((e) => e.bookId == item.bookId);
+        let total = 0 as number;
+        this.showBookList[idx].bookRating.map((e) => {
+          total += e.isChecked ? 1 : 0;
+        })
+        this.showBookList[idx].bookRatingValue = this.showBookList[idx].bookRatingValue + total;
+        this.showBookList[idx].ratingCount++;
+        this.$store.commit('updateBookList', this.allBookList);
       }
     },
-    TouchStart(e: any, item: any) {
-      e.preventDefault();
-      let starIdx = e.target.id.split('-')[1].split('_')[1];
+    ClickRating(item: any) {
+      if (confirm("送出評分嗎?")) {
+        let idx = this.showBookList.findIndex((e) => e.bookId == item.bookId);
+        let total = 0 as number;
+        this.showBookList[idx].bookRating.map((e) => {
+          total += e.isChecked ? 1 : 0;
+        })
+        this.showBookList[idx].bookRatingValue = this.showBookList[idx].bookRatingValue + total;
+        this.showBookList[idx].ratingCount++;
+        this.$store.commit('updateBookList', this.allBookList);
+      }
+    },
+    MouseLeave(e: any, item: any) {
       for (let start = 0; start < this.ratingMax; start++) {
-        item.bookRating[start].isChecked = start <= starIdx;
+        item.bookRating[start].isChecked = false;
       }
     },
     ClickStar(e: any, item: any) {
@@ -93,6 +109,9 @@ export default Vue.extend({
       for (let start = 0; start < this.ratingMax; start++) {
         item.bookRating[start].isChecked = start <= starIdx;
       }
+    },
+    ClickPurchased() {
+      alert("這是一個永遠不會推出的功能。");
     }
   }
 });

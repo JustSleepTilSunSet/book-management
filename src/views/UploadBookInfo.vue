@@ -45,7 +45,8 @@ export default defineComponent({
                 bookIntro: this.bookIntro,
                 bookCover: this.imageBytes, // base64
                 bookRatingValue: this.bookRatingValue,
-                bookRating: [] as Array<any>
+                bookRating: [] as Array<any>,
+                ratingCount: 0 // 收到評分數
             };
             for (let idx = 0; idx < 5; idx++) {
                 bookObj.bookRating.push(

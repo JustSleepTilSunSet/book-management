@@ -1,7 +1,6 @@
 .DS_Store
 node_modules
 /dist
-/deploylog
 
 # local env files
 .env.local
@@ -22,4 +21,3 @@ pnpm-debug.log*
 *.sln
 *.sw?
 *.sh
-errorlog.txt

@@ -12,11 +12,12 @@
       <div class="row">
         <div class="col-sm-3" v-for="(item, index) of  showBookList " :key="index">
           <div class="card  border-show" style="width: 100%">
-            <img v-if="item.bookCover" :src="item.bookCover" style="margin: auto;height:10%;width:10%;">
+            <img v-if="item.bookCover" :src="item.bookCover" style="margin: auto;height:30%;width:30%;">
             <h2 v-else>The book haven't cover.😢</h2>
             <div class="card-body">
               <h5 class="card-title">{{ item.bookName }}</h5>
               <p class="card-text">{{ item.bookIntro }}</p>
+              <p class="card-text">類型: {{ item.selectedCategory }}</p>
               <p class="card-text" v-if="item.ratingCount > 0">當前評分: {{
                 parseFloat((item.bookRatingValue / item.ratingCount) + "").toFixed(2) }} ({{
     item.ratingCount }})</p>

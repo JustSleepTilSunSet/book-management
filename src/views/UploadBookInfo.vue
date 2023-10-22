@@ -11,12 +11,25 @@
         <input type="text" v-model="bookIntro" id="book-introduction" class="form-control" aria-label="Small"
             aria-describedby="inputGroup-sizing-sm">
         <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-sm">類型</span>
+        </div>
+        <div class="dropdown">
+            <button type="button" class="btn btn-info" @click="showCategory">{{ CategoryObj.categoryText }}</button>
+            <div class="dropdown-content" v-if="CategoryObj.isShow">
+                <p @click="selectOption($event)">科幻</p>
+                <p @click="selectOption($event)">懸疑</p>
+                <p @click="selectOption($event)">日常</p>
+            </div>
+            <div v-if="selectedCategory == null">未選擇</div>
+            <div v-else>{{ selectedCategory }}</div>
+        </div>
+        <div class="input-group-prepend">
             <span class="input-group-text" id="inputGroup-sizing-sm">封面</span>
         </div>
         <input type="file" id="book-cover" @change="UploadImage" class="form-control" aria-label="Small"
             aria-describedby="inputGroup-sizing-sm">
         <button @click="SubmitAll" class="btn btn-primary" style="margin: auto;">新建圖書</button>
-        <h5>預覽:</h5>
+        <h5>書圖預覽:</h5>
         <img v-if="imageBytes" :src="imageBytes" alt="DefaultCover" height="100px" width="150px">
 
     </div>
@@ -34,10 +47,21 @@ export default defineComponent({
             bookIntro: '',
             imageBytes: '' as string,
             bookId: this.$store.getters.getBookIdx as number,
-            bookRatingValue: 0 as number
+            bookRatingValue: 0 as number,
+            CategoryObj: { isShow: false, categoryText: "點選類型" },
+            selectedCategory: null
         };
     },
     methods: {
+        showCategory() {
+            this.CategoryObj.isShow = !this.CategoryObj.isShow;
+            this.CategoryObj.categoryText = this.CategoryObj.isShow ? "收起選單" : "點選類型";
+        },
+        selectOption(e: any) {
+            this.CategoryObj.isShow = !this.CategoryObj.isShow;
+            this.selectedCategory = e.target.innerText;
+
+        },
         SubmitAll() {
             let bookObj = {
                 bookId: `book_${this.$store.getters.getBookIdx}`,
@@ -46,7 +70,8 @@ export default defineComponent({
                 bookCover: this.imageBytes, // base64
                 bookRatingValue: this.bookRatingValue,
                 bookRating: [] as Array<any>,
-                ratingCount: 0 // 收到評分數
+                ratingCount: 0, // 收到評分數
+                selectedCategory: this.selectedCategory == null ? "未分類" : this.selectedCategory
             };
             for (let idx = 0; idx < 5; idx++) {
                 bookObj.bookRating.push(
@@ -65,6 +90,7 @@ export default defineComponent({
                     封面: ${this.imageBytes.length > 0 ? '已經上傳' : '未上傳'}
                    完畢`);
             this.imageBytes = '' as string;
+            this.selectedCategory = null;
         },
         async UploadImage(event: any) {
             let target = (event.target as HTMLInputElement);
@@ -85,3 +111,15 @@ export default defineComponent({
 });
 
 </script>
+
+<style lang="scss">
+.btn {
+    // for Gosomewhere button
+    display: block;
+    margin: auto;
+}
+
+.checked {
+    color: orange;
+}
+</style>

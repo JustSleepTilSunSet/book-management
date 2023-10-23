@@ -16,9 +16,10 @@
         <div class="dropdown">
             <button type="button" class="btn btn-info" @click="showCategory">{{ CategoryObj.categoryText }}</button>
             <div class="dropdown-content" v-if="CategoryObj.isShow">
-                <p @click="selectOption($event)">科幻</p>
-                <p @click="selectOption($event)">懸疑</p>
-                <p @click="selectOption($event)">日常</p>
+                <div :id="`tag${index}`" :class="{ selected: category.isSelected }" @touchend="cancelCategory($event, index)" @touchstart="getCategory($event, index)"
+                    @mouseenter="getCategory($event, index)" @mouseleave="cancelCategory($event, index)"
+                    v-for="(category, index) in CategoryList" @click="selectOption($event, index)">{{ category.name }}
+                </div>
             </div>
             <div v-if="selectedCategory == null">未選擇</div>
             <div v-else>{{ selectedCategory }}</div>
@@ -48,17 +49,28 @@ export default defineComponent({
             imageBytes: '' as string,
             bookId: this.$store.getters.getBookIdx as number,
             bookRatingValue: 0 as number,
-            CategoryObj: { isShow: false, categoryText: "點選類型" },
+            CategoryList: [{ isSelected: false, name: "科幻" }, { isSelected: false, name: "懸疑" }, { isSelected: false, name: "日常" }],
+            CategoryObj: { isShow: false, categoryText: "點選類型", isSelected: false },
             selectedCategory: null
         };
     },
     methods: {
+        cancelCategory(e: any, index: number) {
+            this.CategoryList[index].isSelected = false;
+        },
+        getCategory(e: any, index: number) {
+            this.CategoryList[index].isSelected = true;
+        },
         showCategory() {
             this.CategoryObj.isShow = !this.CategoryObj.isShow;
             this.CategoryObj.categoryText = this.CategoryObj.isShow ? "收起選單" : "點選類型";
+            for (let category of this.CategoryList) {
+                category.isSelected = false;
+            }
         },
-        selectOption(e: any) {
+        selectOption(e: any, index: number) {
             this.CategoryObj.isShow = !this.CategoryObj.isShow;
+            this.CategoryList[index].isSelected = true;
             this.selectedCategory = e.target.innerText;
 
         },
@@ -121,5 +133,9 @@ export default defineComponent({
 
 .checked {
     color: orange;
+}
+
+.selected {
+    background-color: antiquewhite;
 }
 </style>

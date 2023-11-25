@@ -41,6 +41,8 @@
                   @dblclick="ClickRating(item)" v-touch:touchhold="() => { TouchRating(item); }"></span>
               </div>
               <a href="#" class="btn btn-primary" style="margin-top: 5%;" @click="ClickPurchased">我想購買</a>
+              <a :href="item.eBookBytes" class="btn btn-primary" style="margin-top: 5%;"
+                @click="ClickDownloadeBook(item)">下載電子預覽</a>
             </div>
           </div>
         </div>
@@ -50,7 +52,8 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import Vue2TouchEvents from 'vue2-touch-events'
+import Vue2TouchEvents from 'vue2-touch-events';
+import axios from 'axios';
 
 Vue.use(Vue2TouchEvents)
 export default Vue.extend({
@@ -112,7 +115,14 @@ export default Vue.extend({
       }
     },
     ClickPurchased() {
-      alert("這是一個永遠不會推出的功能。");
+      alert("The function never be released.");
+    },
+    ClickDownloadeBook(item: any) {
+      let iframe = "<iframe width='100%' height='100%' src='" + item.eBookBytes + "'></iframe>"
+      let showWindow = window.open() as Window;
+      showWindow.document.open();
+      showWindow.document.write(iframe);
+      showWindow.document.close();
     }
   }
 });

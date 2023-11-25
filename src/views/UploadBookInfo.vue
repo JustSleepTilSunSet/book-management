@@ -16,19 +16,26 @@
         <div class="dropdown">
             <button type="button" class="btn btn-info" @click="showCategory">{{ CategoryObj.categoryText }}</button>
             <div class="dropdown-content" v-if="CategoryObj.isShow">
-                <div :id="`tag${index}`" :class="{ selected: category.isSelected }" @touchend="cancelCategory($event, index)" @touchstart="getCategory($event, index)"
+                <div :id="`tag${index}`" style="cursor: pointer;" :class="{ selected: category.isSelected }"
+                    @touchend="cancelCategory($event, index)" @touchstart="getCategory($event, index)"
                     @mouseenter="getCategory($event, index)" @mouseleave="cancelCategory($event, index)"
                     v-for="(category, index) in CategoryList" @click="selectOption($event, index)">{{ category.name }}
                 </div>
             </div>
             <div v-if="selectedCategory == null">未選擇</div>
-            <div v-else>{{ selectedCategory }}</div>
+            <div v-else style="cursor: pointer;">{{ selectedCategory }}</div>
         </div>
         <div class="input-group-prepend">
             <span class="input-group-text" id="inputGroup-sizing-sm">封面</span>
         </div>
         <input type="file" id="book-cover" @change="UploadImage" class="form-control" aria-label="Small"
             aria-describedby="inputGroup-sizing-sm">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-sm">電子書</span>
+        </div>
+        <input type="file" id="book-eletric" @change="UploadPdf" class="form-control" aria-label="Small"
+            aria-describedby="inputGroup-sizing-sm">
+
         <button @click="SubmitAll" class="btn btn-primary" style="margin: auto;">新建圖書</button>
         <h5>書圖預覽:</h5>
         <img v-if="imageBytes" :src="imageBytes" alt="DefaultCover" height="100px" width="150px">
@@ -51,7 +58,8 @@ export default defineComponent({
             bookRatingValue: 0 as number,
             CategoryList: [{ isSelected: false, name: "科幻" }, { isSelected: false, name: "懸疑" }, { isSelected: false, name: "日常" }],
             CategoryObj: { isShow: false, categoryText: "點選類型", isSelected: false },
-            selectedCategory: null
+            selectedCategory: null,
+            eBookBytes: '' as string,
         };
     },
     methods: {
@@ -83,7 +91,8 @@ export default defineComponent({
                 bookRatingValue: this.bookRatingValue,
                 bookRating: [] as Array<any>,
                 ratingCount: 0, // 收到評分數
-                selectedCategory: this.selectedCategory == null ? "未分類" : this.selectedCategory
+                selectedCategory: this.selectedCategory == null ? "未分類" : this.selectedCategory,
+                eBookBytes: this.eBookBytes
             };
             for (let idx = 0; idx < 5; idx++) {
                 bookObj.bookRating.push(
@@ -104,13 +113,19 @@ export default defineComponent({
             this.imageBytes = '' as string;
             this.selectedCategory = null;
         },
+
         async UploadImage(event: any) {
             let target = (event.target as HTMLInputElement);
             let file = target?.files?.[0];
-            if (file) {
+            let fileExtension = file?.name.split('.')[file?.name.split('.').length - 1];
+            if (fileExtension != 'jpeg') {
+                alert("The uploaded not image.");
+                target.value = ""; // Recover the content of component to default status.
+            } else {
                 this.imageBytes = await this.readAsDataURL(file);
             }
         },
+
         async readAsDataURL(file: any) {
             return new Promise<string>((resolve, reject) => {
                 const reader = new FileReader();
@@ -118,7 +133,18 @@ export default defineComponent({
                 reader.onerror = reject;
                 reader.readAsDataURL(file);
             });
-        }
+        },
+        async UploadPdf(event: any) {
+            let target = (event.target as HTMLInputElement);
+            let file = target?.files?.[0];
+            let fileExtension = file?.name.split('.')[file?.name.split('.').length - 1];
+            if (fileExtension != 'pdf') {
+                alert("The uploaded not pdf.");
+                target.value = ""; // Recover the content of component to default status.
+            } else {
+                this.eBookBytes = await this.readAsDataURL(file);
+            }
+        },
     }
 });
 

@@ -80,6 +80,7 @@ export default defineComponent({
             this.CategoryObj.isShow = !this.CategoryObj.isShow;
             this.CategoryList[index].isSelected = true;
             this.selectedCategory = e.target.innerText;
+            this.CategoryObj.categoryText = "點選類型";
 
         },
         SubmitAll() {
